@@ -4,14 +4,10 @@ import OpenAI from "openai";
 import cors from "cors";
 
 dotenv.config();
+
 const app = express();
-app.use(
-  cors({
-    origin: "http://127.0.0.1:3000",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-  }),
-);
+app.use(cors());
+app.use(express.static("public"));
 app.use(express.json());
 
 const openai = new OpenAI({
@@ -24,10 +20,22 @@ app.post("/api/chat", async (req, res) => {
 
     const response = await openai.responses.create({
       model: "gpt-5-nano",
-      input: message,
+      input: [
+        {
+          role: "system",
+          content:
+            "Format answers clearly using headings, bullet points, and code blocks when useful.",
+        },
+        {
+          role: "user",
+          content: message,
+        },
+      ],
     });
 
-    res.json({ reply: response.output_text });
+    res.json({
+      reply: response.output_text,
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "AI request failed" });
