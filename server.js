@@ -19,7 +19,7 @@ app.post("/api/chat", async (req, res) => {
     const { message } = req.body;
 
     const response = await openai.responses.create({
-      model: "gpt-5-nano",
+      model: "gpt-5.4",
       input: [
         {
           role: "system",
@@ -31,6 +31,9 @@ app.post("/api/chat", async (req, res) => {
           content: message,
         },
       ],
+      text: {
+        verbosity: "low",
+      },
     });
 
     res.json({
